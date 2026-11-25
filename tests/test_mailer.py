@@ -394,6 +394,7 @@ from mailer.reporter import (
     append_to_sent_log,
     load_sent_log,
     load_failed_emails,
+    load_visited_records,
     get_today_send_count,
 )
 
@@ -416,10 +417,12 @@ class TestRunStats:
         stats.record("a@b.com", "SKIPPED_INVALID_EMAIL")
         stats.record("b@c.com", "SKIPPED_NO_MX")
         stats.record("c@d.com", "SKIPPED_DUPLICATE")
+        stats.record("d@e.com", "SKIPPED_ALREADY_SENT")
         assert stats.skipped_invalid == 1
         assert stats.skipped_no_mx == 1
         assert stats.skipped_duplicate == 1
-        assert stats.total_skipped == 3
+        assert stats.skipped_already_sent == 1
+        assert stats.total_skipped == 4
 
     def test_success_rate(self):
         stats = RunStats()
@@ -473,6 +476,18 @@ class TestSentLog:
 
         count = get_today_send_count(log_path)
         assert count == 2
+
+    def test_load_visited_records(self, tmp_path):
+        log_path = tmp_path / "sent_log.csv"
+        append_to_sent_log(log_path, "alice@test.com", "DRY_RUN", "", "S1", "2026-01-01T00:00:00")
+        append_to_sent_log(log_path, "alice@test.com", "SENT", "", "S1", "2026-01-01T01:00:00")
+        append_to_sent_log(log_path, "bob@bad.com", "SKIPPED_NO_MX", "No MX", "", "2026-01-01T02:00:00")
+
+        visited = load_visited_records(log_path)
+        assert "alice@test.com" in visited
+        assert visited["alice@test.com"]["is_sent"] is True
+        assert "bob@bad.com" in visited
+        assert visited["bob@bad.com"]["status"] == "SKIPPED_NO_MX"
 
     def test_no_log_file(self, tmp_path):
         log_path = tmp_path / "nonexistent.csv"

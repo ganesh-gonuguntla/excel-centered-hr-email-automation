@@ -37,6 +37,7 @@ from mailer.reporter import (
     get_today_send_count,
     load_failed_emails,
     load_sent_log,
+    load_visited_records,
     print_stats,
     summarize_sent_log,
     write_results_excel,
@@ -193,9 +194,15 @@ def run(
 
     console.print(f"[green]✅ Loaded {len(df)} rows[/green]")
 
-    # Load sent log for resume / dedup
+    # Load sent log and visited history for resume / dedup
+    visited_records = load_visited_records(SENT_LOG)
     sent_emails = load_sent_log(SENT_LOG)
     failed_emails = load_failed_emails(SENT_LOG) if retry_failed else set()
+
+    console.print(
+        f"[dim]History record: {len(visited_records)} emails previously visited "
+        f"({len(sent_emails)} successfully sent)[/dim]"
+    )
 
     if retry_failed:
         console.print(f"[cyan]🔄 Retry mode: {len(failed_emails)} previously failed emails[/cyan]")
@@ -263,9 +270,10 @@ def run(
             name = normalized["name"]
             company = normalized["company"]
             designation = normalized["designation"]
+            email_lower = email.lower().strip()
 
             # In retry mode, skip emails that didn't previously fail
-            if retry_failed and email.lower() not in failed_emails:
+            if retry_failed and email_lower not in failed_emails:
                 progress.update(task, advance=1)
                 results.append({
                     "status": "",
@@ -274,6 +282,76 @@ def run(
                     "timestamp": "",
                 })
                 continue
+
+            # -------------------------------------------------------------
+            # PRE-PIPELINE CHECK 1: Already visited & sent in a previous run
+            # -------------------------------------------------------------
+            if not retry_failed and (email_lower in sent_emails):
+                prev_info = visited_records.get(email_lower, {})
+                prev_ts = prev_info.get("timestamp", "")
+                reason = f"Already sent in previous run ({prev_ts})" if prev_ts else "Already sent in previous run"
+                logger.info(f"Row {idx + 1}: SKIPPED_ALREADY_SENT - {email if not mask else '***'} ({reason})")
+                stats.record(email, "SKIPPED_ALREADY_SENT", reason)
+                now = datetime.now().isoformat()
+                results.append({
+                    "status": "SKIPPED_ALREADY_SENT",
+                    "reason": reason,
+                    "subject": prev_info.get("subject", ""),
+                    "timestamp": now,
+                })
+                progress.update(task, advance=1)
+                continue
+
+            # -------------------------------------------------------------
+            # PRE-PIPELINE CHECK 2: Duplicate within the current file
+            # -------------------------------------------------------------
+            if email_lower in seen_emails:
+                reason = "Duplicate email in current file"
+                logger.info(f"Row {idx + 1}: SKIPPED_DUPLICATE - {email if not mask else '***'} ({reason})")
+                stats.record(email, "SKIPPED_DUPLICATE", reason)
+                now = datetime.now().isoformat()
+                results.append({
+                    "status": "SKIPPED_DUPLICATE",
+                    "reason": reason,
+                    "subject": "",
+                    "timestamp": now,
+                })
+                progress.update(task, advance=1)
+                continue
+
+            # -------------------------------------------------------------
+            # PRE-PIPELINE CHECK 3: Previously verified invalid or no-MX
+            # -------------------------------------------------------------
+            if not retry_failed and email_lower in visited_records:
+                prev_info = visited_records[email_lower]
+                prev_status = prev_info.get("status")
+                if prev_status == "SKIPPED_NO_MX":
+                    prev_ts = prev_info.get("timestamp", "")
+                    reason = f"Previously verified no MX record ({prev_ts})" if prev_ts else "Previously verified no MX record"
+                    logger.info(f"Row {idx + 1}: SKIPPED_NO_MX - {email if not mask else '***'} ({reason})")
+                    stats.record(email, "SKIPPED_NO_MX", reason)
+                    now = datetime.now().isoformat()
+                    results.append({
+                        "status": "SKIPPED_NO_MX",
+                        "reason": reason,
+                        "subject": "",
+                        "timestamp": now,
+                    })
+                    progress.update(task, advance=1)
+                    continue
+                elif prev_status == "SKIPPED_INVALID_EMAIL":
+                    reason = "Previously verified invalid email syntax"
+                    logger.info(f"Row {idx + 1}: SKIPPED_INVALID_EMAIL - {email if not mask else '***'} ({reason})")
+                    stats.record(email, "SKIPPED_INVALID_EMAIL", reason)
+                    now = datetime.now().isoformat()
+                    results.append({
+                        "status": "SKIPPED_INVALID_EMAIL",
+                        "reason": reason,
+                        "subject": "",
+                        "timestamp": now,
+                    })
+                    progress.update(task, advance=1)
+                    continue
 
             # Validate
             is_valid, validation_status = validate_email_full(

@@ -39,6 +39,7 @@ class RunStats:
         self.skipped_invalid: int = 0
         self.skipped_no_mx: int = 0
         self.skipped_duplicate: int = 0
+        self.skipped_already_sent: int = 0
         self.dry_run: int = 0
         self.error_counts: Counter = Counter()
         self.failed_list: list[dict[str, str]] = []
@@ -57,15 +58,18 @@ class RunStats:
             self.failed += 1
             self.error_counts[reason] += 1
             self.failed_list.append({"email": email, "reason": reason})
+        elif status in ("SKIPPED_ALREADY_SENT", "SKIPPED_VISITED"):
+            self.skipped_already_sent += 1
+            self.skipped_list.append({"email": email, "reason": reason or "Already visited / sent in previous run"})
         elif status == "SKIPPED_INVALID_EMAIL":
             self.skipped_invalid += 1
-            self.skipped_list.append({"email": email, "reason": "Invalid email"})
+            self.skipped_list.append({"email": email, "reason": reason or "Invalid email"})
         elif status == "SKIPPED_NO_MX":
             self.skipped_no_mx += 1
-            self.skipped_list.append({"email": email, "reason": "No MX record"})
+            self.skipped_list.append({"email": email, "reason": reason or "No MX record"})
         elif status == "SKIPPED_DUPLICATE":
             self.skipped_duplicate += 1
-            self.skipped_list.append({"email": email, "reason": "Duplicate"})
+            self.skipped_list.append({"email": email, "reason": reason or "Duplicate"})
 
     def finalize(self) -> None:
         self.end_time = datetime.now()
@@ -88,7 +92,12 @@ class RunStats:
 
     @property
     def total_skipped(self) -> int:
-        return self.skipped_invalid + self.skipped_no_mx + self.skipped_duplicate
+        return (
+            self.skipped_invalid
+            + self.skipped_no_mx
+            + self.skipped_duplicate
+            + self.skipped_already_sent
+        )
 
 
 def print_stats(stats: RunStats, mask: bool = False) -> None:
@@ -102,9 +111,11 @@ def print_stats(stats: RunStats, mask: bool = False) -> None:
     if stats.dry_run > 0:
         table.add_row("🔵 Dry run (not sent)", f"[blue]{stats.dry_run}[/blue]")
     table.add_row("❌ Failed to send", f"[red]{stats.failed}[/red]")
+    if stats.skipped_already_sent > 0:
+        table.add_row("⏭️  Skipped: already sent/visited", f"[yellow]{stats.skipped_already_sent}[/yellow]")
     table.add_row("⏭️  Skipped: invalid email", f"[yellow]{stats.skipped_invalid}[/yellow]")
     table.add_row("⏭️  Skipped: no MX record", f"[yellow]{stats.skipped_no_mx}[/yellow]")
-    table.add_row("⏭️  Skipped: duplicate", f"[yellow]{stats.skipped_duplicate}[/yellow]")
+    table.add_row("⏭️  Skipped: duplicate in file", f"[yellow]{stats.skipped_duplicate}[/yellow]")
     table.add_row("📈 Success rate", f"{stats.success_rate:.1f}%")
     table.add_row("⏱️  Time taken", stats.elapsed)
 
@@ -156,20 +167,46 @@ def _mask_email(email: str) -> str:
 # ---------- sent_log.csv ----------
 
 
-def load_sent_log(log_path: str | Path) -> set[str]:
-    """Load emails previously sent successfully from sent_log.csv."""
+def load_visited_records(log_path: str | Path) -> dict[str, dict[str, Any]]:
+    """Load all visited email records from sent_log.csv.
+
+    Returns:
+        dict mapping email.lower() -> {
+            'status': status,
+            'reason': reason,
+            'subject': subject,
+            'timestamp': timestamp,
+            'is_sent': bool,
+        }
+    """
     path = Path(log_path)
-    sent: set[str] = set()
+    visited: dict[str, dict[str, Any]] = {}
     if not path.exists():
-        return sent
+        return visited
     with open(path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            if row.get("status") == "SENT":
-                email = row.get("email", "").lower().strip()
-                if email:
-                    sent.add(email)
-    return sent
+            raw_email = row.get("email", "")
+            email = raw_email.lower().strip()
+            if not email:
+                continue
+            status = row.get("status", "")
+            # If already marked SENT in any previous row, preserve is_sent=True
+            was_sent = visited.get(email, {}).get("is_sent", False) or (status == "SENT")
+            visited[email] = {
+                "status": status,
+                "reason": row.get("reason", ""),
+                "subject": row.get("subject", ""),
+                "timestamp": row.get("timestamp", ""),
+                "is_sent": was_sent,
+            }
+    return visited
+
+
+def load_sent_log(log_path: str | Path) -> set[str]:
+    """Load emails previously sent successfully from sent_log.csv."""
+    visited = load_visited_records(log_path)
+    return {email for email, r in visited.items() if r.get("is_sent", False)}
 
 
 def load_failed_emails(log_path: str | Path) -> set[str]:
