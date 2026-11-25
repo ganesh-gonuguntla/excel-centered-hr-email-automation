@@ -87,12 +87,12 @@ def extract_first_name(
     return first.title()
 
 
-def build_greeting(name: str, honorifics: set[str] | None = None) -> str:
+def build_greeting(name: str, honorifics: set[str] | None = None, greeting_word: str = "Hi") -> str:
     """Build the greeting line for an email."""
     first = extract_first_name(name, honorifics)
     if first:
-        return f"Dear {first},"
-    return "Dear Hiring Team,"
+        return f"{greeting_word} {first},"
+    return f"{greeting_word} Hiring Team,"
 
 
 def select_template_type(designation: str) -> str:

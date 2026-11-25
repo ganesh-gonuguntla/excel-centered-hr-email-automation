@@ -1,31 +1,31 @@
 {{greeting}}
 
-I am {{sender_name}}, a {{degree}} student at {{college}} (graduating {{graduation_year}}). I am reaching out to explore whether {{company}} has internship openings in {{internship_interest}}.
+I’m {{sender_name}}, a {{degree}} student at {{college}} graduating in {{graduation_year}}, reaching out to see if {{company}} has openings for AI/ML or full-stack software interns.
 
-My key skills include {{skills}}.{% if highlight_project %} {{highlight_project}}{% endif %}
+I’ve worked on projects across AI and full-stack development—including MedGaurd, a graph-backed medical AI assistant—and I’m eager to contribute to {{company}}'s engineering work while learning from your team.
 
-I would welcome the chance to contribute to {{company}}'s engineering team and to learn from your experienced professionals. If there are any open internship positions, or if you could point me to the right person or application process, I would greatly appreciate it. My resume is attached for your review.
-{% if github or linkedin or portfolio %}
-You can find more of my work here:
+If you have any upcoming internship cycles or could point me toward the right engineering team or hiring process, I’d really appreciate a brief chat. My resume is attached, along with my work below:
 {% if linkedin %}
-- LinkedIn: {{linkedin}}
+
+LinkedIn: {{linkedin}}
 {% endif %}
 {% if github %}
-- GitHub: {{github}}
+
+GitHub: {{github}}
 {% endif %}
 {% if portfolio %}
-- Portfolio: {{portfolio}}
-{% endif %}
-{% endif %}
-Thank you for your time and consideration. I look forward to your response.
 
-Best regards,
+Portfolio: {{portfolio}}
+{% endif %}
+
+Thanks for your time,
+
 {{sender_name}}
 {% if phone %}
 📞 {{phone}}
 {% endif %}
 {% if email %}
-✉️  {{email}}
+✉️ {{email}}
 {% endif %}
 
 —

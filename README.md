@@ -65,9 +65,13 @@ SMTP_USER=your.email@gmail.com
 SMTP_APP_PASSWORD=abcd efgh ijkl mnop
 ```
 
-### 6. Fill in `profile.yaml`
+### 6. Configure `profile.yaml`
 
-Open `profile.yaml` and replace every `REPLACE_ME` with your actual information. The tool will refuse to run while any placeholder remains.
+```bash
+copy profile.yaml.example profile.yaml
+```
+
+Open `profile.yaml` and replace every `REPLACE_ME` with your actual information. (Both `profile.yaml` and `.env` are ignored by git in `.gitignore` so your personal details and credentials will never be committed to GitHub.)
 
 ### 7. Preview Emails
 

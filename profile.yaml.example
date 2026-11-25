@@ -1,0 +1,32 @@
+# ===================================================================
+# Internship Mailer – Your Profile Template
+# ===================================================================
+# Copy this file to profile.yaml and fill in ALL fields below:
+#   copy profile.yaml.example profile.yaml
+#
+# Replace every "REPLACE_ME" with your actual details.
+# The tool will refuse to run while any REPLACE_ME placeholder remains.
+
+sender_name: "REPLACE_ME"               # Your full name (e.g. "John Doe")
+degree: "REPLACE_ME"                     # e.g. "B.Tech CSE (AIML)"
+college: "REPLACE_ME"                    # e.g. "Your University / College Name"
+graduation_year: "REPLACE_ME"            # e.g. "2027"
+phone: "REPLACE_ME"                      # e.g. "+91 9876543210"
+email: "REPLACE_ME"                      # Must match SMTP_USER in .env
+linkedin: "REPLACE_ME"                   # e.g. "https://www.linkedin.com/in/your-profile"
+github: "REPLACE_ME"                     # e.g. "https://github.com/your-username"
+portfolio: ""                            # Optional: your portfolio website URL
+
+resume_path: "resume.pdf"               # Path to your resume PDF
+                                         # Resume is attached ONLY for contacts with
+                                         # Intern Interest Score >= 3
+
+internship_interest: "AI/ML or full-stack software development"
+
+skills:
+  - "Python"
+  - "Machine Learning"
+  - "REPLACE_ME"                         # Add your technical skills here
+
+highlight_project: "REPLACE_ME"
+# Example: "Built MedGaurd, a graph-backed medical AI assistant with automated safety checks."

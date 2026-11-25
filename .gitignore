@@ -1,5 +1,14 @@
-# Secrets
+# Personal configuration & secrets (NEVER commit these!)
+profile.yaml
 .env
+
+# Contact lists & resume files
+contacts.xlsx
+test_contacts.xlsx
+*.xlsx
+*.xls
+resume.pdf
+*.pdf
 
 # Logs and output (regenerated on each run)
 sent_log.csv

@@ -329,16 +329,16 @@ class TestExtractFirstName:
 
 class TestBuildGreeting:
     def test_normal(self):
-        assert build_greeting("Anita Sharma") == "Dear Anita,"
+        assert build_greeting("Anita Sharma") == "Hi Anita,"
 
     def test_empty(self):
-        assert build_greeting("") == "Dear Hiring Team,"
+        assert build_greeting("") == "Hi Hiring Team,"
 
     def test_placeholder(self):
-        assert build_greeting("HR") == "Dear Hiring Team,"
+        assert build_greeting("HR") == "Hi Hiring Team,"
 
     def test_honorific(self):
-        assert build_greeting("Dr. Anita") == "Dear Anita,"
+        assert build_greeting("Dr. Anita") == "Hi Anita,"
 
 
 class TestSelectTemplateType:
@@ -636,7 +636,7 @@ class TestEmailPersonalizer:
             "Anita Sharma", "anita@acme.com", "Acme Corp", "Talent Acquisition Lead"
         )
         assert result["template_type"] == "ta"
-        assert "Dear Anita," in result["body_text"]
+        assert "Hi Anita," in result["body_text"]
         assert "Acme Corp" in result["subject"]
 
         # Test HR template
@@ -644,7 +644,7 @@ class TestEmailPersonalizer:
             "Bob Smith", "bob@beta.com", "Beta Inc", "HR Manager"
         )
         assert result["template_type"] == "hr"
-        assert "Dear Bob," in result["body_text"]
+        assert "Hi Bob," in result["body_text"]
 
 
 # ----- Resume-from-log integration test -----

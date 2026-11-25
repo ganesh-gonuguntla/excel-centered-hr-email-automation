@@ -1,7 +1,7 @@
 # Subject lines for internship emails (one per line)
 # Use {{company}} and {{sender_name}} as template variables
-Internship Enquiry: AI/ML & Full-Stack | {{sender_name}}
-Seeking a Software Development Internship at {{company}}
-Aspiring AI/ML & Full-Stack Intern, Keen on {{company}}
-Internship Opportunities at {{company}}?
-{{sender_name}}: Student Developer Interested in {{company}}
+AI/ML or Full-Stack Intern inquiry — 2027 CSE (AIML) student | {{company}}
+Seeking AI/ML or Full-Stack Internship at {{company}} — {{sender_name}}
+{{sender_name}} — 2027 CSE (AIML) student interested in {{company}}
+Internship Opportunities at {{company}}? (AI/ML & Full-Stack)
+AI/ML & Software Intern inquiry | {{company}}
