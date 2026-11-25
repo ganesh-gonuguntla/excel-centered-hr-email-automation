@@ -1,0 +1,1 @@
+# internship-mailer core package

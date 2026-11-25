@@ -1,0 +1,32 @@
+{{greeting}}
+
+I am {{sender_name}}, a {{degree}} student at {{college}} (graduating {{graduation_year}}). I am reaching out to explore whether {{company}} has internship openings in {{internship_interest}}.
+
+My key skills include {{skills}}.{% if highlight_project %} {{highlight_project}}{% endif %}
+
+I would welcome the chance to contribute to {{company}}'s engineering team and to learn from your experienced professionals. If there are any open internship positions, or if you could point me to the right person or application process, I would greatly appreciate it. My resume is attached for your review.
+{% if github or linkedin or portfolio %}
+You can find more of my work here:
+{% if linkedin %}
+- LinkedIn: {{linkedin}}
+{% endif %}
+{% if github %}
+- GitHub: {{github}}
+{% endif %}
+{% if portfolio %}
+- Portfolio: {{portfolio}}
+{% endif %}
+{% endif %}
+Thank you for your time and consideration. I look forward to your response.
+
+Best regards,
+{{sender_name}}
+{% if phone %}
+📞 {{phone}}
+{% endif %}
+{% if email %}
+✉️  {{email}}
+{% endif %}
+
+—
+If you'd prefer not to receive emails like this, just reply and I won't write again.

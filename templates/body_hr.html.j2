@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #222; line-height: 1.6;">
+
+<p>{{greeting}}</p>
+
+<p>I am {{sender_name}}, a {{degree}} student at {{college}} (graduating {{graduation_year}}). I am reaching out to explore whether {{company}} has internship openings in {{internship_interest}}.</p>
+
+<p>My key skills include {{skills}}.{% if highlight_project %} {{highlight_project}}{% endif %}</p>
+
+<p>I would welcome the chance to contribute to {{company}}&rsquo;s engineering team and to learn from your experienced professionals. If there are any open internship positions, or if you could point me to the right person or application process, I would greatly appreciate it. My resume is attached for your review.</p>
+
+{% if github or linkedin or portfolio %}
+<p>You can find more of my work here:</p>
+<ul>
+  {% if linkedin %}<li><a href="{{linkedin}}">LinkedIn</a></li>{% endif %}
+  {% if github %}<li><a href="{{github}}">GitHub</a></li>{% endif %}
+  {% if portfolio %}<li><a href="{{portfolio}}">Portfolio</a></li>{% endif %}
+</ul>
+{% endif %}
+
+<p>Thank you for your time and consideration. I look forward to your response.</p>
+
+<p>
+Best regards,<br>
+<strong>{{sender_name}}</strong><br>
+{% if phone %}📞 {{phone}}<br>{% endif %}
+{% if email %}✉️ {{email}}<br>{% endif %}
+</p>
+
+<hr style="border: none; border-top: 1px solid #ccc; margin-top: 20px;">
+<p style="font-size: 11px; color: #999;">If you'd prefer not to receive emails like this, just reply and I won't write again.</p>
+
+</body>
+</html>

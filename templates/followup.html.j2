@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #222; line-height: 1.6;">
+
+<p>{{greeting}}</p>
+
+<p>I hope this follow-up finds you well. I had previously written to you regarding internship opportunities at {{company}} in {{internship_interest}}.</p>
+
+<p>I remain very enthusiastic about the possibility of contributing to {{company}}&rsquo;s team. If there have been any updates on internship openings or the application process, I would be grateful to know.</p>
+
+<p>My resume is attached for your convenience. Please feel free to reach out if you need any additional information.</p>
+
+<p>Thank you again for your time.</p>
+
+<p>
+Warm regards,<br>
+<strong>{{sender_name}}</strong><br>
+{% if phone %}📞 {{phone}}<br>{% endif %}
+{% if email %}✉️ {{email}}<br>{% endif %}
+</p>
+
+<hr style="border: none; border-top: 1px solid #ccc; margin-top: 20px;">
+<p style="font-size: 11px; color: #999;">If you'd prefer not to receive emails like this, just reply and I won't write again.</p>
+
+</body>
+</html>

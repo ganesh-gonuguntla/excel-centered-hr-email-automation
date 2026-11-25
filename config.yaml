@@ -1,0 +1,39 @@
+# ===================================================================
+# Internship Mailer – Configuration
+# ===================================================================
+
+# SMTP settings (credentials go in .env, NOT here)
+smtp:
+  host: "smtp.gmail.com"
+  port: 587          # 587 = STARTTLS, 465 = SSL
+  use_ssl: false     # Set true for port 465
+
+# Sending behavior
+sending:
+  delay_range: [25, 60]     # Random delay between sends (seconds)
+  daily_cap: 100            # Max emails per day (Gmail personal: stay under 500)
+  max_retries: 2            # Retry transient errors up to N times
+
+# Column mapping (customize if your Excel has different header names)
+# Maps canonical name -> your column header
+# Uncomment and edit if needed:
+# column_mapping:
+#   name: "Full Name"
+#   email: "Email Address"
+#   designation: "Role"
+#   company: "Organization"
+
+# Honorifics to strip from names (lowercase)
+honorifics:
+  - mr
+  - mrs
+  - ms
+  - dr
+  - prof
+  - capt
+  - captain
+  - sir
+  - crp
+  - cpl
+  - sgt
+  - rev

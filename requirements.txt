@@ -1,0 +1,15 @@
+# Core
+pandas>=2.0
+openpyxl>=3.1
+Jinja2>=3.1
+PyYAML>=6.0
+python-dotenv>=1.0
+rich>=13.0
+typer>=0.9
+
+# Email validation
+email-validator>=2.0
+dnspython>=2.4
+
+# Testing
+pytest>=7.0
